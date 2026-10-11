@@ -1,0 +1,44 @@
+NOTICE
+======
+
+SoftCardII is licensed under the Apache License, Version 2.0 (see
+LICENSE). This file lists third-party materials included in or used to
+build this project.
+
+------------------------------------------------------------------------
+Bundled under GPLv2-or-later
+------------------------------------------------------------------------
+
+src/test/resources/zexdoc.com
+src/test/resources/zexdoc.z80
+src/test/resources/zexall.com
+src/test/resources/zexall.z80
+
+    Z80 instruction set exerciser
+    Copyright (C) 1994  Frank D. Cringle
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    Source of these copies: https://github.com/anotherlin/z80emu
+    (testfiles/)
+
+The compiled programs (.com) and the assembler source they were built from
+(.z80) are both included, so the source accompanies the binaries directly.
+They are independent test fixtures used to verify the Z80 core, not part of
+it; as with ReplicApple2Plus's 6502 functional test, this is read as an
+aggregate under the GPL. That is a good-faith reading of the license text,
+not a legal conclusion.
+
+------------------------------------------------------------------------
+Not included
+------------------------------------------------------------------------
+
+The Microsoft SoftCard II CP/M 2.28B master disk, which
+SoftCardIICpmTest boots, is Microsoft's and is not distributed with this
+project.
+
+The board photographs consulted for HARDWARE-REFERENCE.md were found
+online; no image is included.

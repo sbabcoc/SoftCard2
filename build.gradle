@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.nordstrom.ui-tools'
+description = 'SoftCardII'
+version = '0.1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+/*
+ * ReplicApple2Plus supplies the SlotCard contract at compile time and is
+ * already present at run time (it loads this jar as a plugin), so it is
+ * compileOnly, never bundled. Install it locally first with
+ * `./gradlew install` in that project; set its version in gradle.properties.
+ */
+dependencies {
+    compileOnly "com.nordstrom.ui-tools:ReplicApple2Plus:${replicApple2PlusVersion}"
+    testImplementation "com.nordstrom.ui-tools:ReplicApple2Plus:${replicApple2PlusVersion}"
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+/*
+ * The CP/M integration test needs the SoftCard II master disk, which isn't
+ * part of this project:  ./gradlew test -PbootDisk=/path/to/image.dsk
+ */
+test {
+    useJUnitPlatform()
+    if (project.hasProperty('bootDisk')) {
+        systemProperty 'softcard.bootDisk', project.property('bootDisk')
+    }
+}
