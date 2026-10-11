@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.nordstrom.ui-tools'
-description = 'SoftCardII'
+description = 'SoftCard2'
 version = '0.1.0-SNAPSHOT'
 
 repositories {

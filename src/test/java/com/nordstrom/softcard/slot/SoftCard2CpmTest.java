@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @EnabledIfSystemProperty(named = "softcard.bootDisk", matches = ".+")
-class SoftCardIICpmTest {
+class SoftCard2CpmTest {
 
     private static final long BOOT_CYCLES = 8_000_000;
     private static final long COMMAND_CYCLES = 25_000_000;

@@ -15,7 +15,7 @@ import java.util.Set;
  * The Z80 runs on its own clock, kept in step with the 6502 through
  * {@link #tick}.
  */
-public final class SoftCardII implements SlotCard {
+public final class SoftCard2 implements SlotCard {
 
     private static final String Z80_CLOCK_HZ = "z80ClockHz";
 

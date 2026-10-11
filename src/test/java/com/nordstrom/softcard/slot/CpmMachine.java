@@ -55,7 +55,7 @@ final class CpmMachine {
     private final SlotCard[] slots = new SlotCard[8];
     private final LanguageCard languageCard = new LanguageCard();
     private final Disk2Controller disk = new Disk2Controller();
-    private final SoftCardII card = new SoftCardII();
+    private final SoftCard2 card = new SoftCard2();
     private final Cpu6502 cpu;
     private final Deque<Integer> keys = new ArrayDeque<>();
     private final ConsoleTap console = new ConsoleTap();
@@ -76,7 +76,7 @@ final class CpmMachine {
         cpu = new Cpu6502(new Bus(), 0xFFFC);
     }
 
-    SoftCardII card() {
+    SoftCard2 card() {
         return card;
     }
 

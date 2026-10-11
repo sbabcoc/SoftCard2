@@ -1,7 +1,7 @@
 NOTICE
 ======
 
-SoftCardII is licensed under the Apache License, Version 2.0 (see
+SoftCard2 is licensed under the Apache License, Version 2.0 (see
 LICENSE). This file lists third-party materials included in or used to
 build this project.
 
@@ -37,7 +37,7 @@ Not included
 ------------------------------------------------------------------------
 
 The Microsoft SoftCard II CP/M 2.28B master disk, which
-SoftCardIICpmTest boots, is Microsoft's and is not distributed with this
+SoftCard2CpmTest boots, is Microsoft's and is not distributed with this
 project.
 
 The board photographs consulted for HARDWARE-REFERENCE.md were found

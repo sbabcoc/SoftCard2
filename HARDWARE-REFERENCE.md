@@ -9,7 +9,7 @@ photographs of a REV A board. Each claim is tagged with its evidence:
 | **[6502]** | Read from the 6502 code on the boot disk |
 | **[BIOS]** | Read from the Z80 BIOS on the boot disk |
 | **[photo]** | Read from the board photographs |
-| **[run]** | Confirmed by booting the real disk on this emulation (`SoftCardIICpmTest`) |
+| **[run]** | Confirmed by booting the real disk on this emulation (`SoftCard2CpmTest`) |
 | **[inferred]** | The simplest hardware consistent with the code; not observed directly |
 
 Addresses in the 6502 code are given where they run: the loader in

@@ -1,4 +1,4 @@
-# SoftCardII
+# SoftCard2
 
 An emulation of the Microsoft SoftCard II, a Z80 CP/M card for the
 Apple II, as a single-board computer: a Z80B with its own 64 KB of RAM
@@ -42,7 +42,7 @@ in that project), at the version named in `gradle.properties`.
 - `SoftCardBoardTest` drives the board from the host side the way the CP/M
   loader does: the probe, feeding a program through boot mode, the
   mailbox, and the Z80 clock rate.
-- `SoftCardIICpmTest` boots the real master disk on ReplicApple2Plus's own
+- `SoftCard2CpmTest` boots the real master disk on ReplicApple2Plus's own
   6502, Language Card and Disk II controller, then runs `DIR`, `SAVE`,
   `STAT`, `ERA` and a warm boot. The disk is Microsoft's and isn't
   included; supply it with `./gradlew test -PbootDisk=/path/to/image.dsk`,
