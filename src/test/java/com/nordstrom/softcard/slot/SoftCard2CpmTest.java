@@ -25,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * The disk image is Microsoft's and isn't part of this project. Run with
  * {@code -PbootDisk=/path/to/image.dsk}; without it these tests are skipped.
- * The image is copied first, since the tests write to it.
+ * The image is copied first, and the copy made writable, since the tests
+ * write to it.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -41,6 +42,10 @@ class SoftCard2CpmTest {
     void boot(@TempDir Path scratch) throws IOException {
         Path copy = scratch.resolve("boot.dsk");
         Files.copy(Path.of(System.getProperty("softcard.bootDisk")), copy);
+        // The copy inherits the original's permissions. A write-protected
+        // original would make the emulated disk write-protected too, and
+        // CP/M would fail SAVE with "Bdos Err On A: R/O".
+        assertTrue(copy.toFile().setWritable(true), "could not make the disk copy writable: " + copy);
         machine = new CpmMachine(copy);
         machine.run(BOOT_CYCLES);
     }
