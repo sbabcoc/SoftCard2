@@ -12,9 +12,8 @@ import java.util.Set;
  * reads as the floating bus, which is exactly what the CP/M loader's slot
  * scan expects before it probes a slot for this card.
  * <p>
- * The Z80 runs only when {@link #tick} is called with elapsed 6502 cycles.
- * Whatever assembles the machine has to register it as a cycle listener,
- * the way it does for the Disk II controller.
+ * The Z80 runs on its own clock, kept in step with the 6502 through
+ * {@link #tick}.
  */
 public final class SoftCardII implements SlotCard {
 
@@ -68,6 +67,7 @@ public final class SoftCardII implements SlotCard {
      *
      * @param cycles elapsed 6502 cycles
      */
+    @Override
     public void tick(int cycles) {
         board.advance(cycles);
     }

@@ -117,7 +117,7 @@ feeds it instructions through the mailbox. **[6502]** **[run]**
    | 1 | no match | Unrecognized ROM |
    | 2 | `$03`/`$3C` | Disk II |
    | 3 | `$18`/`$38` | 6850 ACIA serial card (Apple Communications Card) |
-   | 4 | `$38`/`$18` | Card with `$C800`-ROM entry points |
+   | 4 | `$38`/`$18` | Card with `$C800`-ROM entry points, such as the Videx VideoTerm **[run]** |
    | 5 | `$48`/`$48` | Parallel printer card |
    | 6 | `$38`/`$18`, `$Cn0B` = `$01` | Pascal 1.1 firmware (e.g. Super Serial Card) |
 
@@ -143,7 +143,17 @@ The Z80 sends a command byte and its parameters; the 6502 does the work and
 replies. The 6502 dispatches through a 17-entry table at `$0D63`/`$0D74`.
 The BIOS has a matching 17-entry table of senders at `$FACB`, entered
 through `$FBA0` with the command number in `$0049`. Both tables agree on
-every count below. **[6502]** **[BIOS]** **[run]**
+every count below, and every command has been run. **[6502]** **[BIOS]**
+**[run]**
+
+Commands 3–9 and 11 are exercised by booting and using CP/M. Commands 0, 1,
+2, 10 and 12–16 were run from DDT by calling `$FBA0`: command 2 wrote `$0300`,
+command 1 read it back, command 0 called the Monitor's BELL at `$FF3A`,
+command 12 sounded its tone, and command 10 formatted a blank disk in drive 2
+(status `$00`; CP/M then read its empty directory). Commands 13–16 were run
+the same way with hi-res page 1 displayed (switched on through command 2):
+the fill covered the screen, the invert changed all of it, and the masked
+and XOR writes set and then cleared the pixels of byte `$2000`. **[run]**
 
 | # | Z80 → 6502 | Action | 6502 → Z80 |
 |---|---|---|---|
@@ -196,7 +206,9 @@ memory with `$C054`/`$C055` on every character. It assumes the IIe's
 **[6502]** On an Apple II+ with slot 3 empty, both halves of each
 character pair land in main memory, and every other character is lost.
 **[run]** This agrees with the packaging's requirement for an 80-column
-card on a II+: there, the console is the card in slot 3.
+card on a II+: there, the console is the card in slot 3. With a Videx
+VideoTerm in slot 3, CP/M boots and runs on the 80-column display through
+the type-4 entry points. **[run]**
 
 ## Unknowns
 
