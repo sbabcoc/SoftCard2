@@ -86,6 +86,10 @@ final class CpmMachine {
         return card;
     }
 
+    HostTransferCard transferCard() {
+        return transferCard;
+    }
+
     long cycles() {
         return cycles;
     }

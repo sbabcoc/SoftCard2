@@ -69,7 +69,8 @@ class XferDeliveryTest {
     @Order(3)
     void theAdapterRuns() {
         String run = command("XFER\n");
-        assertTrue(run.contains("XFER: the CP/M adapter isn't built yet."), run);
+        // No transfer window is open in this test, so XFER says so and returns.
+        assertTrue(run.contains("HOST TRANSFER IS NOT AVAILABLE"), run);
         assertTrue(run.endsWith("A>"), run);
     }
 
@@ -80,7 +81,7 @@ class XferDeliveryTest {
         command("PIP XFER.HEX=RDR:\n");
         command("LOAD XFER\n");
         String run = command("XFER\n");
-        assertTrue(run.contains("XFER: the CP/M adapter isn't built yet."), run);
+        assertTrue(run.contains("HOST TRANSFER IS NOT AVAILABLE"), run);
     }
 
     private String command(String keys) {

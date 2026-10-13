@@ -51,3 +51,7 @@ in that project), at the version named in `gradle.properties`.
   slot 2, CP/M's reader slot, and installs the card's CP/M adapter with
   the master disk's own `PIP XFER.HEX=RDR:` and `LOAD XFER`, then runs it.
   It needs the master disk too.
+- `XferSessionTest` runs whole transfer sessions with XFER, driven by
+  ReplicApple2Plus's `TransferOperations` as its transfer window drives
+  them: volumes, listing, text and binary export and import, replacing a
+  file, and ending back at the CCP. It needs the master disk too.
