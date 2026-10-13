@@ -55,3 +55,7 @@ in that project), at the version named in `gradle.properties`.
   ReplicApple2Plus's `TransferOperations` as its transfer window drives
   them: volumes, listing, text and binary export and import, replacing a
   file, and ending back at the CCP. It needs the master disk too.
+- `XferStartTest` runs ReplicApple2Plus's File > Start CP/M Transfer logic
+  at the master disk's CCP: installing XFER and starting a session,
+  starting it again without reinstalling, and explaining a missing PIP.
+  It needs the master disk too.

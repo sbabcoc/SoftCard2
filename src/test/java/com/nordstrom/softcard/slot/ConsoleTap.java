@@ -39,7 +39,7 @@ final class ConsoleTap {
     private int position;
     private int slot;
 
-    void accept(int value) {
+    synchronized void accept(int value) {
         if (command < 0) {
             if (value >= PARAMETER_BYTES.length) {
                 throw new IllegalStateException(String.format("Unknown SoftCard II command $%02X", value));
@@ -61,7 +61,7 @@ final class ConsoleTap {
         }
     }
 
-    String text() {
+    synchronized String text() {
         return text.toString();
     }
 }

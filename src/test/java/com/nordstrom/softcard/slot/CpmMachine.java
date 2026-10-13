@@ -9,8 +9,8 @@ import com.nordstrom.emulator.transfer.HostTransferCard;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.OptionalInt;
 import java.util.Properties;
 
@@ -62,9 +62,10 @@ final class CpmMachine {
     private final SoftCard2 card = new SoftCard2();
     private final HostTransferCard transferCard = new HostTransferCard();
     private final Cpu6502 cpu;
-    private final Deque<Integer> keys = new ArrayDeque<>();
+    // Typed from a test's thread while the machine runs on another.
+    private final Deque<Integer> keys = new ConcurrentLinkedDeque<>();
     private final ConsoleTap console = new ConsoleTap();
-    private int keyLatch;
+    private volatile int keyLatch;
     private int floating = 0x5A;
     private long cycles;
 
@@ -111,6 +112,11 @@ final class CpmMachine {
             disk.tick(c);
             card.tick(c);
         }
+    }
+
+    /** @return true while typed keys remain unread by the machine */
+    boolean isTyping() {
+        return !keys.isEmpty() || keyLatch >= 0x80;
     }
 
     /** Queues keystrokes, one per keyboard strobe. */
