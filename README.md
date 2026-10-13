@@ -47,3 +47,7 @@ in that project), at the version named in `gradle.properties`.
   `STAT`, `ERA` and a warm boot. The disk is Microsoft's and isn't
   included; supply it with `./gradlew test -PbootDisk=/path/to/image.dsk`,
   or the test is skipped.
+- `XferDeliveryTest` adds ReplicApple2Plus's host file transfer card in
+  slot 2, CP/M's reader slot, and installs the card's CP/M adapter with
+  the master disk's own `PIP XFER.HEX=RDR:` and `LOAD XFER`, then runs it.
+  It needs the master disk too.

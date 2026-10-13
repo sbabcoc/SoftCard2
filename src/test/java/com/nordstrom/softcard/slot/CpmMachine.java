@@ -5,6 +5,7 @@ import com.nordstrom.emulator.cpu.Cpu6502;
 import com.nordstrom.emulator.expansion.Disk2Controller;
 import com.nordstrom.emulator.expansion.LanguageCard;
 import com.nordstrom.emulator.system.SlotCard;
+import com.nordstrom.emulator.transfer.HostTransferCard;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,8 +16,10 @@ import java.util.Properties;
 
 /**
  * Just enough Apple II+ to boot the SoftCard II CP/M disk: ReplicApple2Plus's
- * own 6502, Language Card (slot 0) and Disk II controller (slot 6), this
- * project's card in slot 4, 48K of RAM and a keyboard.
+ * own 6502, Language Card (slot 0), host file transfer card (slot 2) and
+ * Disk II controller (slot 6), this project's card in slot 4, 48K of RAM and
+ * a keyboard. Slot 2 is CP/M's reader and punch slot, where the transfer
+ * card serves CP/M as a serial card.
  * <p>
  * The Apple II+ ROMs aren't part of either project, so the motherboard ROM
  * here is a stand-in: every byte is RTS, except that the reset vector points
@@ -34,6 +37,7 @@ import java.util.Properties;
 final class CpmMachine {
 
     static final int CARD_SLOT = 4;
+    static final int TRANSFER_SLOT = 2;
 
     /**
      * The Monitor's WAIT delay loop at $FCA8, which the Disk II boot ROM
@@ -56,6 +60,7 @@ final class CpmMachine {
     private final LanguageCard languageCard = new LanguageCard();
     private final Disk2Controller disk = new Disk2Controller();
     private final SoftCard2 card = new SoftCard2();
+    private final HostTransferCard transferCard = new HostTransferCard();
     private final Cpu6502 cpu;
     private final Deque<Integer> keys = new ArrayDeque<>();
     private final ConsoleTap console = new ConsoleTap();
@@ -73,6 +78,7 @@ final class CpmMachine {
         slots[0] = languageCard;
         slots[6] = disk;
         slots[CARD_SLOT] = card;
+        slots[TRANSFER_SLOT] = transferCard;
         cpu = new Cpu6502(new Bus(), 0xFFFC);
     }
 
