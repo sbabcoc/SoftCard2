@@ -162,15 +162,14 @@ class XferSessionTest {
 
     @Test
     @Order(5)
-    void aFileWithoutATextExtensionComesBackAsTextOnlyByOverride() throws Exception {
+    void aTxtFileKeepsItsNameBothWays() throws Exception {
         Path notes = host.resolve("NOTES.TXT");
         Files.writeString(notes, "HELLO\n");
-        ops.importFile(notes, A0, "NOTES", replace); // .TXT marks text; the CP/M name is what remains
-        GuestEntry entry = entry("NOTES");
-        assertEquals("NOTES", ops.readForExport(List.of("A0:", "NOTES"), entry).hostName(), "binary by default");
-        TransferOperations.ExportRead asText = ops.readForExport(List.of("A0:", "NOTES"), entry, true);
-        assertEquals("NOTES.TXT", asText.hostName());
-        assertEquals("HELLO\n", new String(asText.data(), StandardCharsets.US_ASCII));
+        TransferOperations.Result r = ops.importFile(notes, A0, "NOTES.TXT", replace);
+        assertEquals(TransferOperations.Outcome.DONE, r.outcome(), r.detail());
+        TransferOperations.ExportRead back = ops.readForExport(List.of("A0:", "NOTES.TXT"), entry("NOTES.TXT"));
+        assertEquals("NOTES.TXT", back.hostName(), "text by its extension, and .TXT not doubled");
+        assertEquals("HELLO\n", new String(back.data(), StandardCharsets.US_ASCII));
     }
 
     @Test
