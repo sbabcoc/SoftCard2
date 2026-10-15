@@ -7,10 +7,8 @@ mailbox. It plugs into
 [ReplicApple2Plus](https://github.com/sbabcoc/ReplicApple2Plus) as a
 `SlotCard` (short name `softcard2`).
 
-No documentation for this card is known to survive. The hardware model
-was reconstructed from the CP/M 2.28B boot disk and board photographs; see
-[HARDWARE-REFERENCE.md](HARDWARE-REFERENCE.md), which tags every claim
-with its evidence.
+The hardware model was reconstructed from the CP/M 2.28B boot disk and board photographs; see
+[HARDWARE-REFERENCE.md](HARDWARE-REFERENCE.md), which tags every claim with its evidence. Internet Archive has preserved a copy of the [original documentation](https://archive.org/details/softcard-ii-installation-and-operations-manual-and-programmers-manual-1/page/n376/mode/1up)
 
 ## Layout
 
