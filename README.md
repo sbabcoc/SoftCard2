@@ -1,5 +1,7 @@
 # SoftCard2
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.nordstrom.ui-tools/SoftCard2.svg)](https://central.sonatype.com/search?q=com.nordstrom.ui-tools+SoftCard2&core=gav)
+
 An emulation of the Microsoft SoftCard II, a Z80 CP/M card for the
 Apple II, as a single-board computer: a Z80B with its own 64 KB of RAM
 and its own clock, connected to the Apple only through a two-register
@@ -17,6 +19,15 @@ The hardware model was reconstructed from the CP/M 2.28B boot disk and board pho
 | `com.nordstrom.softcard.z80` | Z80 CPU core with T-state timing and a /WAIT stall |
 | `com.nordstrom.softcard.board` | The board: CPU, RAM, mailbox, boot mode, clock. No Apple II dependencies |
 | `com.nordstrom.softcard.slot` | The ReplicApple2Plus plug-in card |
+
+## Installing
+
+The card is a plug-in jar, `SoftCard2-<version>.jar`, from this project's
+GitHub releases or Maven Central. Put it in a folder of plug-ins, and
+point ReplicApple2Plus at that folder: with **File > Plugins Folder...**,
+or `--plugins DIR` on its command line. Then add the card to a slot
+configuration as `type=softcard2`; ReplicApple2Plus's README has a
+complete configuration for running CP/M.
 
 ## Slot settings
 

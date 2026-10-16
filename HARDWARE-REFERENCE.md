@@ -1,14 +1,19 @@
 # Microsoft SoftCard II — Hardware Reference
 
-No schematic, manual or other emulation of this card is known to exist.
-Everything here was reconstructed from the CP/M 2.28B master disk and two
-photographs of a REV A board. Each claim is tagged with its evidence:
+No schematic or other emulation of this card is known to exist. The
+hardware model was reconstructed from the CP/M 2.28B master disk and two
+photographs of a REV A board, and afterwards checked against Microsoft's
+*SoftCard II Installation and Operation Manual and Programmer's Manual*
+(a scan is on the Internet Archive). The manual describes the software
+interface, not the card's registers, so the register-level model rests
+on the disk and the photographs. Each claim is tagged with its evidence:
 
 | Tag | Meaning |
 |---|---|
 | **[6502]** | Read from the 6502 code on the boot disk |
 | **[BIOS]** | Read from the Z80 BIOS on the boot disk |
 | **[photo]** | Read from the board photographs |
+| **[manual]** | Stated in the SoftCard II manual |
 | **[run]** | Confirmed by booting the real disk on this emulation (`SoftCard2CpmTest`) |
 | **[inferred]** | The simplest hardware consistent with the code; not observed directly |
 
@@ -34,9 +39,16 @@ There is no ROM, PROM or PAL on the board. Boot mode must therefore be held
 in one of the four 74LS74 flip-flops. **[photo]** **[inferred]**
 
 The Z80 runs on its own clock, so its timing is independent of the Apple's
-bus. A divide-by-two of the oscillator would give 6 MHz, matching the
-Z80B's rating, but the divider isn't visible. **[inferred]** The emulation
-defaults to 6 MHz and takes `z80ClockHz` as a slot setting.
+bus: the manual says the Z80B "is not synchronized or phase-locked" to
+the Apple's clocks, and that it runs three times as fast as earlier
+SoftCards, whose Z80 ran at about 2 MHz. **[manual]** A divide-by-two of
+the oscillator would give 6 MHz, matching both the Z80B's rating and that
+factor, though the divider itself isn't visible. **[inferred]** The
+emulation defaults to 6 MHz and takes `z80ClockHz` as a slot setting.
+
+Z80 interrupts are not supported on the SoftCard II; 6502 interrupts can
+be. **[manual]** The emulation doesn't connect /INT or /NMI. The card can
+go in any slot, and has no switches. **[manual]**
 
 ## Mailbox
 
@@ -116,14 +128,17 @@ feeds it instructions through the mailbox. **[6502]** **[run]**
    | 0 | (unstable) | Empty |
    | 1 | no match | Unrecognized ROM |
    | 2 | `$03`/`$3C` | Disk II |
-   | 3 | `$18`/`$38` | 6850 ACIA serial card (Apple Communications Card) |
-   | 4 | `$38`/`$18` | Card with `$C800`-ROM entry points, such as the Videx VideoTerm **[run]** |
-   | 5 | `$48`/`$48` | Parallel printer card |
-   | 6 | `$38`/`$18`, `$Cn0B` = `$01` | Pascal 1.1 firmware (e.g. Super Serial Card) |
+   | 3 | `$18`/`$38` | 6850 ACIA serial card: Apple Communications Interface, or CCS 7710A **[manual]** |
+   | 4 | `$38`/`$18` | Apple High-Speed Serial Interface, or Silentype interface **[manual]**; the Videx VideoTerm identifies the same way, and works through the same `$C800`-ROM entry points **[run]** |
+   | 5 | `$48`/`$48` | Apple Parallel Printer Interface **[manual]** |
+   | 6 | `$38`/`$18`, `$Cn0B` = `$01` | A card with Pascal 1.1 firmware, such as the Super Serial Card; the manual calls this type "Apple Firmware board" |
 
    An empty slot 3, or a type-5 card there, becomes type 1, the built-in
    console. **[6502]** The type table is sent to the Z80, which stores it
    at `$F3B8` and changes an unrecognized card in slot 3 to type 4. **[BIOS]**
+   The manual documents the slots' entries, `$F3B9–$F3BF`, as the Slots Type
+   Table programs may read; `$F3B8` holds the number of disk drives.
+   **[manual]** **[run]**
 3. **Probe** (`$DA27`). For each slot of type 0 or 1, the 6502 writes
    `$C0n3`, reads `$C0n0`, and writes `3E 5A 2F 32 00 00`
    (`LD A,5Ah / CPL / LD (0000h),A`) to `$C0n0` without polling. A card
@@ -146,6 +161,12 @@ through `$FBA0` with the command number in `$0049`. Both tables agree on
 every count below, and every command has been run. **[6502]** **[BIOS]**
 **[run]**
 
+The manual calls these the *6502 BIOS calls*, and documents them as the
+public interface for CP/M programs: the call number goes in `$49`, the
+parameters in `$45–$4B`, and the program calls `$0040`, where every warm
+boot plants a jump to `$FBA0`. Results come back in `$45–$4B`.
+**[manual]** **[BIOS]** The names below are the manual's.
+
 Commands 3–9 and 11 are exercised by booting and using CP/M. Commands 0, 1,
 2, 10 and 12–16 were run from DDT by calling `$FBA0`: command 2 wrote `$0300`,
 command 1 read it back, command 0 called the Monitor's BELL at `$FF3A`,
@@ -155,25 +176,29 @@ the same way with hi-res page 1 displayed (switched on through command 2):
 the fill covered the screen, the invert changed all of it, and the masked
 and XOR writes set and then cleared the pixels of byte `$2000`. **[run]**
 
-| # | Z80 → 6502 | Action | 6502 → Z80 |
-|---|---|---|---|
-| 0 | address (2), A, X, Y | Read ROM (`$C081`), call the 6502 subroutine | A, X, Y, P |
-| 1 | address (2) | Read 6502 memory | byte |
-| 2 | address (2), value | Write 6502 memory | — |
-| 3 | track, drive, slot, sector | Read a sector | status; then 256 bytes if status is 0 |
-| 4 | track, drive, slot, sector, 256 bytes | Write a sector | status |
-| 5 | slot | Character input | byte |
-| 6 | slot, then character after the reply | Character output | 1 byte (console input status), sent between the slot and the character |
-| 7 | slot | Character status | `$FF` ready, `$00` not |
-| 8 | slot | Initialize device | — |
-| 9 | — | Warm boot: stream `$E200–$FFFF` again | 7,680 bytes |
-| 10 | slot, drive | Format all 35 tracks | status |
-| 11 | 34 bytes | Load the terminal definition into `$141C`, `$140D`, `$1400` | — |
-| 12 | 2 bytes | Beep | — |
-| 13 | 2 bytes | Fill hi-res page 1 with an even/odd byte pair | — |
-| 14 | — | Invert hi-res page 1 | — |
-| 15 | address (2), value, mask | Masked write | — |
-| 16 | address (2), mask | XOR write | — |
+| # | Name | Z80 → 6502 | Action | 6502 → Z80 |
+|---|---|---|---|---|
+| 0 | CALLSUB | address (2), A, X, Y | Read ROM (`$C081`), call the 6502 subroutine | A, X, Y, P |
+| 1 | READMEM | address (2) | Read 6502 memory | byte |
+| 2 | WRITEMEM | address (2), value | Write 6502 memory | — |
+| 3 | READSEC | track, drive, slot, sector | Read a sector | status; then 256 bytes if status is 0 |
+| 4 | WRITESEC | track, drive, slot, sector, 256 bytes | Write a sector | status |
+| 5 | READSLOT | slot | Character input | byte |
+| 6 | WRITESLOT | slot, then character after the reply | Character output | 1 byte (console input status), sent between the slot and the character |
+| 7 | STATSLOT | slot | Character status | `$FF` ready, `$00` not |
+| 8 | INITSLOT | slot | Initialize device | — |
+| 9 | WSTART | — | Warm boot: stream `$E200–$EBFF` again -- the CCP and the first 512 bytes of the BDOS | 2,560 bytes |
+| 10 | FORMAT | slot, drive | Format all 35 tracks | status |
+| 11 | UPDATE | 34 bytes | Load the terminal definition into `$141C`, `$140D`, `$1400` | — |
+| 12 | BEEP | 2 bytes: duration, period | Beep | — |
+| 13 | CLEAR | 2 bytes: even, odd | Fill hi-res page 1 with an even/odd byte pair | — |
+| 14 | INVERT | — | Invert hi-res page 1 | — |
+| 15 | SETPT1 | address (2), XOR mask, AND mask | Masked write | — |
+| 16 | SETPT2 | address (2), XOR byte | XOR write | — |
+
+The warm boot streams 10 sectors because the loader, once the system is
+loaded, rewrites its sector count at `$D932` from 30 to 10. **[6502]**
+**[run]**
 
 - **Addresses** are low byte first. **[6502]**
 - **Sectors** are logical, mapped through the skew table
@@ -196,7 +221,14 @@ and XOR writes set and then cleared the pixels of byte `$2000`. **[run]**
   | 3 | 6850 at `$C0nE`/`$C0nF` | 6850; slot 1 spools to `$4000–$BFFF` | 6850 | `$03`, then `$15` |
   | 4 | `$C84D` | `$C9AA` | keyboard | `$C800` |
   | 5 | returns `$1A` (^Z) | waits on `$CnC1` bit 7, writes `$C0n0`; slot 1 spools to `$4000–$BFFF` | `$CnC1` bit 7 | — |
-  | 6 | Pascal `$Cn0E` | Pascal `$Cn0F` | Pascal `$Cn10` | Pascal `$Cn0D` |
+  | 6 | Pascal `$Cn0E` | Pascal `$Cn0F`; slot 1 spools to `$4000–$BFFF` | Pascal `$Cn10` | Pascal `$Cn0D` |
+
+  The spool is the manual's 32K print buffer: types 3, 5 and 6 in slot 1
+  are buffered. **[manual]** **[6502]** Slot use follows Apple Pascal 1.0:
+  the printer in slot 1, general-purpose I/O such as CP/M's reader and
+  punch in slot 2, the console in slot 3, and up to four disk drives on
+  Disk II controllers in slot 6, then slot 5 -- drives A: and B: on slot 6,
+  C: and D: on slot 5. **[manual]**
 
 ## Built-in console
 
@@ -210,12 +242,45 @@ card on a II+: there, the console is the card in slot 3. With a Videx
 VideoTerm in slot 3, CP/M boots and runs on the 80-column display through
 the type-4 entry points. **[run]**
 
+## Extending the 6502 BIOS
+
+The manual documents a way for programs to install their own 6502 code in
+the 6502 BIOS, through four words in Z80 memory: `CMDEXT` at `$F38E` and
+`CMDVEC` at `$F390` (the 6502 addresses of the cleanup routine and the
+command handler's jump target), and `LOMEM` at `$F392` and `HIMEM` at
+`$F394` (the lowest free addresses of the two 6502 areas left for user
+code, `LOADR`–`$1FFF` and `HIADR`–`$FFF0`). **[manual]** In the running
+system they hold `$0D54`, `$0D44`, `$1600` and `$DB00`. **[run]**
+
+## Where the manual differs from the disk
+
+Where the two disagree, this reference follows the disk's code, which is
+what the emulation runs:
+
+- **READSEC and WRITESEC** describe `$4A/$4B` as the address of a 6502
+  sector buffer. The BIOS sends no address: it receives or sends the
+  sector's 256 bytes through the mailbox, and stores them at the Z80
+  address in `$4A/$4B`. **[BIOS]** **[run]**
+- **INITSLOT** lists a returned slot status; the server returns nothing
+  for command 8. **[6502]** **[BIOS]**
+- **WSTART** reloads "the CCP module and first 256 bytes of the BDOS"; the
+  code reloads 512 bytes of the BDOS. **[6502]** **[run]**
+- **Appendix B** counts 15 BIOS functions; chapters 2 and 4, and the code,
+  have 17.
+- **Installing user code** says to use call 1, READMEM, to write it into
+  6502 memory; writing is call 2, WRITEMEM.
+- **How the Z80 waits.** The manual describes the 6502 halting the Z80
+  when a command arrives and starting it again afterwards. In the code the
+  Z80 simply polls the mailbox's status port until the reply arrives, so
+  the emulation models no halt; if the card has one, the software doesn't
+  depend on it. **[BIOS]** **[run]**
+
 ## Unknowns
 
 - The exact boot-mode decode and boot-mode exit. The model above is the
   simplest one consistent with the code, and it boots and runs CP/M.
 - The function, if any, of `$C0n2` and `$C0n4–$C0nF`.
 - The six unused status bits.
-- The Z80 clock divider.
+- The Z80 clock divider: 6 MHz fits the manual's "three times as fast",
+  but the divider isn't visible.
 - Whether the Am2950 flags are cleared on reset.
-- Whether /INT or /NMI is connected.
