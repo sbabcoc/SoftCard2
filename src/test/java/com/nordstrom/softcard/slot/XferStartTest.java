@@ -25,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@link CpmTransferStarter}, typing at the real master disk's CCP: it
  * installs XFER through the transfer card's reader and starts a session,
  * starts it again without reinstalling, and explains a missing tool.
- * Needs the master disk, like {@link SoftCard2CpmTest}.
+ * Needs the master disk, like {@link SoftCard2CpmTest}; a copy that already
+ * holds XFER works too, since each test erases it first.
  */
 @EnabledIfSystemProperty(named = "softcard.bootDisk", matches = ".+")
 class XferStartTest {
@@ -96,7 +97,7 @@ class XferStartTest {
         return new CpmTransferStarter(keyboard, machine::console, 60_000, 200);
     }
 
-    private void boot() throws IOException {
+    private void boot() throws IOException, InterruptedException {
         Path copy = scratch.resolve("boot.dsk");
         Files.copy(Path.of(System.getProperty("softcard.bootDisk")), copy);
         assertTrue(copy.toFile().setWritable(true), "could not make the disk copy writable: " + copy);
@@ -118,6 +119,10 @@ class XferStartTest {
             }
         }, "cpm");
         running.start();
+        // The tests assume a disk without XFER, as the master disk is; a disk
+        // that has been used for transfers carries XFER.COM already.
+        machine.type("ERA XFER.*\n");
+        awaitPrompt();
     }
 
     private void bootWithout(String file) throws Exception {
