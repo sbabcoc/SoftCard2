@@ -1,10 +1,11 @@
 package com.nordstrom.softcard.slot;
 
+import com.nordstrom.emulator.system.CardParameter;
 import com.nordstrom.emulator.system.SlotCard;
 import com.nordstrom.softcard.board.SoftCardBoard;
 
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * ReplicApple2Plus peripheral wrapping a {@link SoftCardBoard}. The card
@@ -27,8 +28,15 @@ public final class SoftCard2 implements SlotCard {
     }
 
     @Override
-    public Set<String> getSupportedParameters() {
-        return Set.of(Z80_CLOCK_HZ);
+    public String getDisplayName() {
+        return "Microsoft SoftCard II";
+    }
+
+    /** The Z80's clock: any positive rate {@link SoftCardBoard} accepts, its default unless set. */
+    @Override
+    public List<CardParameter> getParameters() {
+        return List.of(CardParameter.integer(Z80_CLOCK_HZ, "Z80 clock (Hz)",
+            SoftCardBoard.DEFAULT_Z80_CLOCK_HZ, 1, Integer.MAX_VALUE));
     }
 
     @Override
