@@ -38,7 +38,8 @@ complete configuration for running CP/M.
 ## Building
 
 ReplicApple2Plus must be in the local Maven repository (`./gradlew install`
-in that project), at the version named in `gradle.properties`.
+in that project), at the version named in `gradle.properties` (1.9.0 or
+later: the runner tests use its headless runner).
 
     ./gradlew build
 
@@ -68,3 +69,12 @@ in that project), at the version named in `gradle.properties`.
   at the master disk's CCP: installing XFER and starting a session,
   starting it again without reinstalling, and explaining a missing PIP.
   It needs the master disk too.
+- `SoftCard2RunnerTest` runs the master disk on a whole Apple II+:
+  ReplicApple2Plus's headless runner with the real Autostart ROM, the
+  VideoTerm as CP/M's console on its own firmware, a Language Card and a
+  Disk II, as in ReplicApple2Plus's README for running CP/M. It boots to
+  `A>` and runs `DIR`, `SAVE`, `STAT`, `ERA` and a warm boot, reading
+  each result off the VideoTerm's screen. Besides the master disk, it
+  needs the ROM images, which aren't distributed:
+  `./gradlew test -PbootDisk=/path/to/image.dsk -Proms=/path/to/roms`,
+  naming the folder with `system-rom.rom` and the VideoTerm's two ROMs.

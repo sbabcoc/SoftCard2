@@ -105,11 +105,20 @@ dependencies {
 /*
  * The CP/M integration tests need the SoftCard II master disk, which isn't
  * part of this project:  ./gradlew test -PbootDisk=/path/to/image.dsk
+ * The tests on ReplicApple2Plus's headless runner need the Apple II+ and
+ * VideoTerm ROM images too, which aren't distributed:  -Proms=/path/to/roms
  */
 test {
     useJUnitPlatform()
     if (project.hasProperty('bootDisk')) {
         systemProperty 'softcard.bootDisk', project.property('bootDisk')
+    }
+    if (project.hasProperty('roms')) {
+        systemProperty 'runner.roms', file(project.property('roms')).absolutePath
+    }
+    // the runner runs in a JVM of its own, on the tests' class path
+    doFirst {
+        systemProperty 'runner.classpath', sourceSets.test.runtimeClasspath.asPath
     }
 }
 

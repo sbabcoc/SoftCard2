@@ -15,6 +15,7 @@ it. ReplicApple2Plus's own RELEASING.md covers that release.
 - The `gh` CLI, signed in to GitHub
 - Gradle wrapper present in the project
 - The SoftCard II CP/M 2.28B master disk image, for the CP/M tests
+- The Apple II+ and VideoTerm ROM images, for the runner tests
 
 ## Version Numbering
 
@@ -35,10 +36,10 @@ Before tagging, verify:
    compile-only dependency, so the published POM doesn't name it.) Commit
    the change.
 2. All changes are committed and pushed.
-3. The project builds cleanly **with the master disk**, so the CP/M tests
-   run instead of being skipped:
+3. The project builds cleanly **with the master disk and the ROM
+   images**, so the CP/M and runner tests run instead of being skipped:
    ```bash
-   ./gradlew clean build -PbootDisk=/path/to/image.dsk
+   ./gradlew clean build -PbootDisk=/path/to/image.dsk -Proms=/path/to/roms
    ```
    Check that nothing was skipped:
    ```bash
